@@ -52,6 +52,7 @@ class VideoEngine(ABC):
         ref_audio_names: list[str],
         first_frame_name: str | None,
         last_frame_name: str | None,
+        guide_audio_name: str | None,
         job_id: str,
     ) -> Path:
         """Execute generation and return path to the muxed audio+video MP4."""

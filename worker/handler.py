@@ -78,12 +78,19 @@ class GenerationService:
                 temp_files.append(p)
                 last_frame_name = p.name
 
+            guide_audio_name: str | None = None
+            if request.guide_audio:
+                p = await self._resolver.resolve(request.guide_audio, input_dir, f"{job_id}_guide_aud", ".wav")
+                temp_files.append(p)
+                guide_audio_name = p.name
+
             video_path = await self._engine.generate(
                 request=request,
                 ref_image_names=ref_image_names,
                 ref_audio_names=ref_audio_names,
                 first_frame_name=first_frame_name,
                 last_frame_name=last_frame_name,
+                guide_audio_name=guide_audio_name,
                 job_id=job_id,
             )
 

@@ -34,6 +34,7 @@ class ComfyUIVideoEngine(VideoEngine):
         ref_audio_names: list[str],
         first_frame_name: str | None,
         last_frame_name: str | None,
+        guide_audio_name: str | None,
         job_id: str,
     ) -> Path:
         client_id = uuid.uuid4().hex
@@ -44,6 +45,7 @@ class ComfyUIVideoEngine(VideoEngine):
             ref_audio_names=ref_audio_names,
             first_frame_name=first_frame_name,
             last_frame_name=last_frame_name,
+            guide_audio_name=guide_audio_name,
             output_prefix=output_prefix,
         )
 

@@ -89,6 +89,7 @@ async def _cmd_storyboard(args: argparse.Namespace) -> None:
         output_dir=out_dir,
         asset_base_dir=sb_path.parent,
         only_scene=args.only_scene,
+        resume=args.resume,
     )
 
 
@@ -120,6 +121,7 @@ def main() -> None:
     p_sb.add_argument("file", help="Path to storyboard JSON")
     p_sb.add_argument("--output-dir", default=None)
     p_sb.add_argument("--only-scene", default=None, help="Re-render only one scene ID and re-stitch")
+    p_sb.add_argument("--resume", action="store_true", help="Skip already-rendered non-empty scene clips")
     p_sb.set_defaults(func=_cmd_storyboard)
 
     args = parser.parse_args()

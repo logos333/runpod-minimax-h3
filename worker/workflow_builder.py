@@ -19,6 +19,7 @@ class MiniMaxH3WorkflowBuilder:
         ref_audio_names: list[str],
         first_frame_name: str | None,
         last_frame_name: str | None,
+        guide_audio_name: str | None,
         output_prefix: str,
     ) -> tuple[dict[str, Any], str]:
         """Return (comfy_prompt_graph, save_video_node_id)."""
@@ -189,6 +190,24 @@ class MiniMaxH3WorkflowBuilder:
             }
             cond_ref = ["30", 0]
             latent_ref = ["30", 1]
+
+        # 3b. Hard timeline soundtrack anchor via MiniMaxH3AddGuide (guarantees 1:1 lip-sync & beat lock)
+        if guide_audio_name:
+            graph["190"] = {
+                "class_type": "LoadAudio",
+                "inputs": {"audio": guide_audio_name},
+            }
+            graph["35"] = {
+                "class_type": "MiniMaxH3AddGuide",
+                "inputs": {
+                    "positive": cond_ref,
+                    "audio_vae": ["13", 0],
+                    "latent": latent_ref,
+                    "audio": ["190", 0],
+                    "frame_idx": request.guide_audio_frame_idx,
+                },
+            }
+            cond_ref = ["35", 0]
 
         # 4. Sampling pipeline (res_multistep / simple / 4-step Turbo)
         graph["40"] = {

@@ -48,9 +48,14 @@ class GenerationRequest(BaseModel):
         description="'match' is fast (matches output area); 'max' uses 2048px short edge for max identity fidelity.",
     )
 
-    # Keyframes for fl2va or hybrid continuation
+    # Keyframes & timeline soundtrack anchor
     first_frame: AssetInput | None = Field(default=None)
     last_frame: AssetInput | None = Field(default=None)
+    guide_audio: AssetInput | None = Field(
+        default=None,
+        description="Timeline-locked soundtrack anchored via MiniMaxH3AddGuide for exact 1:1 lip-sync.",
+    )
+    guide_audio_frame_idx: int = Field(default=0, ge=-9999, le=9999)
 
     # Canvas & timing (MiniMax-H3 uses 32px multiples and 17k+5 frame grid @ 24fps)
     width: int = Field(default=1152, ge=256, le=1920)
@@ -87,8 +92,10 @@ class GenerationRequest(BaseModel):
     def validate_mode_requirements(self) -> GenerationRequest:
         if self.mode != GenerationMode.WARMUP and not self.prompt.strip():
             raise ValueError("'prompt' is required for generation modes.")
-        if self.mode == GenerationMode.REF2VA and not self.ref_images and not self.ref_audios:
-            raise ValueError("mode='ref2va' requires at least one entry in 'ref_images' or 'ref_audios'.")
+        if self.mode == GenerationMode.REF2VA and not (self.ref_images or self.ref_audios or self.guide_audio):
+            raise ValueError(
+                "mode='ref2va' requires at least one entry in 'ref_images', 'ref_audios', or 'guide_audio'."
+            )
         if self.mode == GenerationMode.HYBRID and not (self.first_frame or self.last_frame):
             raise ValueError("mode='hybrid' requires 'first_frame' or 'last_frame' in addition to references.")
         return self

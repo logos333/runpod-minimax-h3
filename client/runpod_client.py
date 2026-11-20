@@ -32,31 +32,51 @@ class RunPodServerlessRunner(ServerlessRunner):
 
     async def run_job(self, payload: dict[str, Any]) -> dict[str, Any]:
         base = f"{self._settings.runpod_api_base.rstrip('/')}/{self._endpoint_id}"
+        max_attempts = 2
         async with self._semaphore:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                submit = await client.post(
-                    f"{base}/run",
-                    headers=self._headers,
-                    json={"input": payload},
-                )
-                submit.raise_for_status()
-                job_id = submit.json()["id"]
-                print(f"[runpod] Submitted job {job_id}", flush=True)
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    async with httpx.AsyncClient(timeout=90.0) as client:
+                        submit = await client.post(
+                            f"{base}/run",
+                            headers=self._headers,
+                            json={"input": payload},
+                        )
+                        submit.raise_for_status()
+                        job_id = submit.json()["id"]
+                        print(f"[runpod] Submitted job {job_id} (attempt {attempt}/{max_attempts})", flush=True)
 
-                deadline = time.monotonic() + self._settings.job_timeout_sec
-                while time.monotonic() < deadline:
-                    resp = await client.get(f"{base}/status/{job_id}", headers=self._headers)
-                    resp.raise_for_status()
-                    data = resp.json()
-                    status = data.get("status")
+                        deadline = time.monotonic() + self._settings.job_timeout_sec
+                        transient_poll_errors = 0
+                        while time.monotonic() < deadline:
+                            try:
+                                resp = await client.get(f"{base}/status/{job_id}", headers=self._headers)
+                                resp.raise_for_status()
+                                data = resp.json()
+                                transient_poll_errors = 0
+                            except httpx.HTTPError as poll_err:
+                                transient_poll_errors += 1
+                                if transient_poll_errors >= 8:
+                                    raise
+                                print(f"[runpod] Transient poll error on {job_id}: {poll_err}; retrying...", flush=True)
+                                await asyncio.sleep(self._settings.poll_interval_sec * 2)
+                                continue
 
-                    if status == "COMPLETED":
-                        return data.get("output") or {}
-                    if status in ("FAILED", "CANCELLED", "TIMED_OUT"):
-                        raise RuntimeError(f"RunPod job {job_id} ended with {status}: {data}")
+                            status = data.get("status")
 
-                    await asyncio.sleep(self._settings.poll_interval_sec)
+                            if status == "COMPLETED":
+                                return data.get("output") or {}
+                            if status in ("FAILED", "CANCELLED", "TIMED_OUT"):
+                                raise RuntimeError(f"RunPod job {job_id} ended with {status}: {data}")
 
-                raise TimeoutError(
-                    f"RunPod job {job_id} timed out after {self._settings.job_timeout_sec}s."
-                )
+                            await asyncio.sleep(self._settings.poll_interval_sec)
+
+                        raise TimeoutError(
+                            f"RunPod job {job_id} timed out after {self._settings.job_timeout_sec}s."
+                        )
+                except Exception as exc:
+                    if attempt >= max_attempts:
+                        raise
+                    print(f"[runpod] Attempt {attempt} failed ({exc}); retrying in 5s...", flush=True)
+                    await asyncio.sleep(5.0)
+            raise RuntimeError("Unreachable")

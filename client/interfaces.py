@@ -21,6 +21,8 @@ class VideoStitcher(ABC):
         self,
         clip_paths: list[Path],
         output_path: Path,
-        audio_crossfade_sec: float = 0.12,
+        fps: int = 24,
+        trim_frames: list[int | None] | None = None,
+        audio_crossfade_sec: float = 0.0,
     ) -> Path:
-        """Stitch ordered clips into output_path with clean A/V sync."""
+        """Stitch ordered clips into output_path with optional frame-exact trimming and clean A/V sync."""

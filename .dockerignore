@@ -1,0 +1,11 @@
+.venv/
+.git/
+outputs/
+examples/
+client/
+scripts/
+__pycache__/
+*.pyc
+.env
+.runpod_state.json
+README.md

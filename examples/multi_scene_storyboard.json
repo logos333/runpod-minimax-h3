@@ -1,0 +1,45 @@
+{
+  "name": "multi_scene_demo",
+  "width": 1152,
+  "height": 640,
+  "fps": 24,
+  "enable_sla": true,
+  "audio_crossfade_sec": 0.12,
+  "ref_images": [
+    {
+      "path": "./assets/me.jpg",
+      "label": "Picture 1: Person"
+    },
+    {
+      "path": "./assets/dress.jpg",
+      "label": "Picture 2: Outfit"
+    },
+    {
+      "path": "./assets/background.jpg",
+      "label": "Picture 3: Location"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_01_establishing",
+      "mode": "ref2va",
+      "duration_sec": 10.0,
+      "continue_from_previous": false,
+      "prompt": "subject_definitions:\n<Subject 1> is the person in <Picture 1> wearing the outfit from <Picture 2> in the setting of <Picture 3>.\n\nsummary:\nEstablishing shot and medium cut introducing <Subject 1>.\n\nretention_analysis:\nPreserve face from <Picture 1>, outfit from <Picture 2>, and environment from <Picture 3>.\n\ndetailed_description:\n[Shot 1: 0s-5s] Wide cinematic push-in across <Picture 3> as <Subject 1> enters frame.\n[Shot 2: 5s-10s] Hard cut to medium shot as <Subject 1> pauses and looks toward camera.\n\noverall_soundscape: Gentle ambient wind and footsteps.\n\nnon_diegetic_music: Minimal atmospheric underscore."
+    },
+    {
+      "id": "scene_02_continuous_walk",
+      "mode": "hybrid",
+      "duration_sec": 10.0,
+      "continue_from_previous": true,
+      "prompt": "subject_definitions:\n<Subject 1> is the person in <Picture 1> wearing the outfit from <Picture 2> in the setting of <Picture 3>.\n\nsummary:\nSeamless continuation from the previous frame as <Subject 1> walks forward and gestures.\n\nretention_analysis:\nStrict continuity of face from <Picture 1>, outfit from <Picture 2>, and lighting from <Picture 3>.\n\ndetailed_description:\n[Shot 1: 0s-10s] Continuous steadicam dolly backward following <Subject 1> walking naturally through <Picture 3>, talking expressively.\n\noverall_soundscape: Natural conversational voice with soft footsteps.\n\nnon_diegetic_music: Minimal atmospheric underscore."
+    },
+    {
+      "id": "scene_03_parallel_cutaway",
+      "mode": "ref2va",
+      "duration_sec": 10.0,
+      "continue_from_previous": false,
+      "prompt": "subject_definitions:\n<Subject 1> is the person in <Picture 1> wearing the outfit from <Picture 2> in the setting of <Picture 3>.\n\nsummary:\nDynamic multi-cut closing sequence (runs in parallel with earlier independent scenes).\n\nretention_analysis:\nPreserve face from <Picture 1>, outfit from <Picture 2>, and setting from <Picture 3>.\n\ndetailed_description:\n[Shot 1: 0s-4s] Low-angle hero shot of <Subject 1> turning smoothly in golden light.\n[Shot 2: 4s-10s] Cut to close-up smile as camera gently pulls back to reveal <Picture 3>.\n\noverall_soundscape: Warm ambient breeze and subtle cloth rustle.\n\nnon_diegetic_music: Uplifting cinematic resolution chord."
+    }
+  ]
+}

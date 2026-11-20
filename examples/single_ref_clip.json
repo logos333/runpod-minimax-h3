@@ -1,0 +1,31 @@
+{
+  "name": "single_ref_test",
+  "width": 1152,
+  "height": 640,
+  "fps": 24,
+  "enable_sla": true,
+  "ref_images": [
+    {
+      "path": "./assets/me.jpg",
+      "label": "Picture 1: User face & body reference"
+    },
+    {
+      "path": "./assets/dress.jpg",
+      "label": "Picture 2: Outfit / dress reference"
+    },
+    {
+      "path": "./assets/background.jpg",
+      "label": "Picture 3: Background location reference"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "intro_cut",
+      "mode": "ref2va",
+      "duration_sec": 10.0,
+      "steps": 4,
+      "ref_image_size": "match",
+      "prompt": "subject_definitions:\n<Subject 1> is the person in <Picture 1>, wearing the exact outfit from <Picture 2>, standing inside the location shown in <Picture 3>.\n\nsummary:\n[reference generation] Two cinematic cuts of <Subject 1> wearing the outfit from <Picture 2> inside the setting of <Picture 3>, speaking naturally to camera.\n\nretention_analysis:\n<Subject 1> keeps exact facial identity and hair from <Picture 1>, exact garment silhouette and fabric from <Picture 2>, and exact architectural lighting from <Picture 3>.\n\ndetailed_description:\n[Shot 1: 0s-5s] Medium tracking shot at eye level. <Subject 1> walks slowly forward, turns toward the lens with a relaxed smile, natural fabric movement.\n[Shot 2: 5s-10s] Crisp cut to a close-up portrait as <Subject 1> looks into the lens and speaks clearly with subtle hand gesture, shallow depth of field.\n\noverall_soundscape: Natural room ambience matching <Picture 3>, soft footsteps, clear intimate voice.\n\nnon_diegetic_music: Subtle warm cinematic synth pad, low volume."
+    }
+  ]
+}

@@ -114,8 +114,8 @@ class RunPodManager:
             "workersMin": workers_min,
             "workersMax": workers_max,
             "idleTimeout": ep.get("idleTimeout") or self._settings.runpod_idle_timeout_sec,
-            "scalerType": "QUEUE_DELAY",
-            "scalerValue": 4,
+            "scalerType": "REQUEST_COUNT",
+            "scalerValue": 1,
         }
         if ep.get("networkVolumeId"):
             ep_input["networkVolumeId"] = ep["networkVolumeId"]

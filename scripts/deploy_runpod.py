@@ -161,8 +161,8 @@ class RunPodProvisioner:
             "workersMax": self._settings.runpod_workers_max,
             "idleTimeout": self._settings.runpod_idle_timeout_sec,
             "executionTimeoutMs": self._settings.runpod_execution_timeout_ms,
-            "scalerType": "QUEUE_DELAY",
-            "scalerValue": 4,
+            "scalerType": "REQUEST_COUNT",
+            "scalerValue": 1,
         }
         if endpoint_id:
             ep_input["id"] = endpoint_id

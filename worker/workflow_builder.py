@@ -191,23 +191,44 @@ class MiniMaxH3WorkflowBuilder:
             cond_ref = ["30", 0]
             latent_ref = ["30", 1]
 
-        # 3b. Hard timeline soundtrack anchor via MiniMaxH3AddGuide (guarantees 1:1 lip-sync & beat lock)
+        # 3b. Hard Audio-to-Video (A2V) Inpaint Lock: freeze target audio stream (noise_mask=0.0)
+        # via VAEEncodeAudio -> SolidMask(0.0) -> SetLatentNoiseMask -> LTXVConcatAVLatent
         if guide_audio_name:
+            audio_t = max(1, round((num_frames / 24.0) * 40))
             graph["190"] = {
                 "class_type": "LoadAudio",
                 "inputs": {"audio": guide_audio_name},
             }
-            graph["35"] = {
-                "class_type": "MiniMaxH3AddGuide",
+            graph["191"] = {
+                "class_type": "VAEEncodeAudio",
                 "inputs": {
-                    "positive": cond_ref,
-                    "audio_vae": ["13", 0],
-                    "latent": latent_ref,
                     "audio": ["190", 0],
-                    "frame_idx": request.guide_audio_frame_idx,
+                    "vae": ["13", 0],
                 },
             }
-            cond_ref = ["35", 0]
+            graph["192"] = {
+                "class_type": "SolidMask",
+                "inputs": {
+                    "value": 0.0,
+                    "width": audio_t,
+                    "height": 2,
+                },
+            }
+            graph["193"] = {
+                "class_type": "SetLatentNoiseMask",
+                "inputs": {
+                    "samples": ["191", 0],
+                    "mask": ["192", 0],
+                },
+            }
+            graph["194"] = {
+                "class_type": "LTXVConcatAVLatent",
+                "inputs": {
+                    "video_latent": latent_ref,
+                    "audio_latent": ["193", 0],
+                },
+            }
+            latent_ref = ["194", 0]
 
         # 4. Sampling pipeline (res_multistep / simple / 4-step Turbo)
         graph["40"] = {

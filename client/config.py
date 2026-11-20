@@ -34,7 +34,7 @@ class ClientSettings(BaseSettings):
     worker_image: str = Field(
         default="ghcr.io/logos333/minimax-h3-worker:latest", alias="WORKER_IMAGE"
     )
-    runpod_datacenter_id: str = Field(default="US-TX-3", alias="RUNPOD_DATACENTER_ID")
+    runpod_datacenter_id: str = Field(default="EU-RO-1", alias="RUNPOD_DATACENTER_ID")
     runpod_volume_name: str = Field(default="minimax-h3-models", alias="RUNPOD_VOLUME_NAME")
     runpod_volume_size_gb: int = Field(default=60, alias="RUNPOD_VOLUME_SIZE_GB")
     runpod_template_name: str = Field(
@@ -44,7 +44,7 @@ class ClientSettings(BaseSettings):
         default="minimax-h3-serverless", alias="RUNPOD_ENDPOINT_NAME"
     )
     runpod_gpu_ids: str = Field(
-        default="AMPERE_80,ADA_48_PRO,ADA_80_PRO", alias="RUNPOD_GPU_IDS"
+        default="ADA_32_PRO,AMPERE_80,BLACKWELL_96,ADA_48_PRO,ADA_24", alias="RUNPOD_GPU_IDS"
     )
     runpod_workers_min: int = Field(default=0, alias="RUNPOD_WORKERS_MIN")
     runpod_workers_max: int = Field(default=3, alias="RUNPOD_WORKERS_MAX")
